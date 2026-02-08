@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Super Friendly Chatbot</title>
+<style>
+  body {
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+    background-color: #f0f8ff;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+  #chatContainer {
+    width: 100%;
+    max-width: 700px;
+    height: 500px;
+    margin: 0 auto 20px auto;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 2px solid #4CAF50;
+    padding: 15px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+  }
+  .message {
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    max-width: 75%;
+    font-size: 1.1em;
+  }
+  .user {
+    align-self: flex-end;
+    background-color: #c8e6c9;
+    color: #333;
+  }
+  .bot {
+    align-self: flex-start;
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  #inputForm {
+    display: flex;
+    justify-content: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  #commandInput {
+    width: 70%;
+    padding: 12px 15px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    border: 2px solid #4CAF50;
+    outline: none;
+  }
+  #commandInput::placeholder {
+    color: #999;
+  }
+  #sendButton {
+    padding: 12px 20px;
+    margin-left: 10px;
+    font-size: 1.2em;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #sendButton:hover {
+    background-color: #45a049;
+  }
+  #tips {
+    max-width: 700px;
+    margin: 10px auto;
+    padding: 10px;
+    background-color: #dff0d8;
+    border-radius: 8px;
+    border: 1px solid #3c763d;
+    font-size: 1em;
+    color: #3c763d;
+  }
+</style>
+</head>
+<body>
+
+<h1>?? Welcome to Your Friendly Chatbot! ??</h1>
+
+<div id="tips">
+  Tip: Try asking me "How are you?", "What's your name?", or give commands like "print Hello", "add 4 5".
+</div>
+
+<div id="chatContainer"></div>
+
+<form id="inputForm" onsubmit="event.preventDefault(); runCommand();">
+  <input type="text" id="commandInput" placeholder="Say hi or give me a command..." autocomplete="off" />
+  <button type="submit" id="sendButton">Send</button>
+</form>
+
+<script>
+const chatContainer = document.getElementById('chatContainer');
+
+function addMessage(text, sender) {
+  const msg = document.createElement('div');
+  msg.className = 'message ' + sender;
+  msg.textContent = text;
+  chatContainer.appendChild(msg);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// Show a welcome message when page loads
+addMessage("Hello! ?? I'm your friendly assistant. How can I help you today?", 'bot');
+
+function getResponse(input) {
+  const message = input.toLowerCase().trim();
+
+  // Recognize friendly questions
+  if (message.includes('how are you')) {
+    return "I'm doing great! Thanks for asking. ?? How about you?";
+  } else if (message.includes('what is your name') || message.includes('who are you')) {
+    return "I'm your friendly chatbot, here to chat and help!";
+  } else if (message.includes('bye') || message.includes('exit') || message.includes('goodbye')) {
+    return "Goodbye! ?? Feel free to chat again anytime!";
+  } else if (message.includes('thank you') || message.includes('thanks')) {
+    return "You're very welcome! ??";
+  } 
+  // Commands
+  else if (message.startsWith('print ')) {
+    return input.substring(6);
+  } else if (message.startsWith('add ')) {
+    const args = input.substring(4).split(' ').map(Number);
+    if (args.some(isNaN)) {
+      return "Oops! Please provide numbers after 'add'. Example: add 4 5";
+    } else {
+      return "The sum is: " + args.reduce((a, b) => a + b, 0);
+    }
+  } else if (message.startsWith('subtract ')) {
+    const args = input.substring(9).split(' ').map(Number);
+    if (args.some(isNaN) || args.length < 2) {
+      return "Please provide at least two numbers after 'subtract'. Example: subtract 10 3";
+    } else {
+      let res = args[0];
+      for (let i = 1; i < args.length; i++) {
+        res -= args[i];
+      }
+      return "Result: " + res;
+    }
+  } 
+  // Default response
+  else {
+    return "I'm here to help! Try asking me 'How are you?', 'What's your name?', or give commands like 'print Hello', 'add 4 5'.";
+  }
+}
+
+function runCommand() {
+  const inputField = document.getElementById('commandInput');
+  const userInput = inputField.value.trim();
+  if (!userInput) return;
+
+  // Show user's message
+  addMessage(userInput, 'user');
+
+  // Clear input
+  inputField.value = '';
+
+  // Get bot response
+  const response = getResponse(userInput);
+
+  // Show bot's message
+  addMessage(response, 'bot');
+}
+
+// Enable pressing Enter to send
+document.getElementById('commandInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    runCommand();
+  }
+});
+</script>
+
+</body>
+</html>
