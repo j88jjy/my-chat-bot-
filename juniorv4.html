@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Smart Friendly Text Generator Chatbot</title>
+<style>
+  body {
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+    background-color: #e0f7fa;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #00796b;
+  }
+  #chatContainer {
+    width: 100%;
+    max-width: 700px;
+    height: 550px;
+    margin: 0 auto 20px auto;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 2px solid #009688;
+    padding: 15px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+  }
+  .message {
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    max-width: 75%;
+    font-size: 1.1em;
+  }
+  .user {
+    align-self: flex-end;
+    background-color: #b2dfdb;
+    color: #333;
+  }
+  .bot {
+    align-self: flex-start;
+    background-color: #cfd8dc;
+    color: #333;
+  }
+  #inputForm {
+    display: flex;
+    justify-content: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  #commandInput {
+    width: 70%;
+    padding: 12px 15px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    border: 2px solid #009688;
+    outline: none;
+  }
+  #commandInput::placeholder {
+    color: #999;
+  }
+  #sendButton {
+    padding: 12px 20px;
+    margin-left: 10px;
+    font-size: 1.2em;
+    background-color: #009688;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #sendButton:hover {
+    background-color: #00796b;
+  }
+  #tips {
+    max-width: 700px;
+    margin: 10px auto;
+    padding: 10px;
+    background-color: #e0f2f1;
+    border-radius: 8px;
+    border: 1px solid #00695c;
+    font-size: 1em;
+    color: #00695c;
+  }
+</style>
+</head>
+<body>
+
+<h1>?? Smart Friendly Text Generator Chatbot ??</h1>
+
+<div id="tips">
+  Tip: Ask me anything! You can chat normally, or give commands like "print Hello", "add 4 5", "subtract 10 3".<br>
+  You can also ask me to generate a story, a poem, or a random fact!
+</div>
+
+<div id="chatContainer"></div>
+
+<form id="inputForm" onsubmit="event.preventDefault(); runCommand();">
+  <input type="text" id="commandInput" placeholder="Say something or ask me to generate text..." autocomplete="off" />
+  <button type="submit" id="sendButton">Send</button>
+</form>
+
+<script>
+const chatContainer = document.getElementById('chatContainer');
+
+function addMessage(text, sender) {
+  const msg = document.createElement('div');
+  msg.className = 'message ' + sender;
+  msg.textContent = text;
+  chatContainer.appendChild(msg);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// Welcome message
+addMessage("Hi there! ?? I'm your friendly AI chatbot. I can chat with you or generate text like stories, poems, and facts. Try me!", 'bot');
+
+// Simple text generator examples
+function generateText(input) {
+  const lower = input.toLowerCase();
+  if (lower.includes('story')) {
+    return "Once upon a time, in a land far away, a curious little robot wanted to explore the world beyond its charging station...";
+  } else if (lower.includes('poem')) {
+    return "Roses are red, violets are blue,\nChatbots are friendly, and so are you!";
+  } else if (lower.includes('fact')) {
+    const facts = [
+      "Honey never spoils.",
+      "Octopuses have three hearts.",
+      "Bananas are berries, but strawberries aren't."
+    ];
+    return facts[Math.floor(Math.random() * facts.length)];
+  }
+  return null;
+}
+
+// Expanded chatbot responses
+function getResponse(input) {
+  const message = input.toLowerCase().trim();
+
+  // Greetings
+  const greetings = ['how are you', 'how are you today', 'what\'s up', 'hi', 'hello', 'hey'];
+  if (greetings.some(g => message.includes(g))) {
+    return "I'm doing well! Thanks for asking. ?? How are you?";
+  }
+
+  const nameQuestions = ['what is your name', 'who are you', 'your name'];
+  if (nameQuestions.some(n => message.includes(n))) {
+    return "I'm your friendly AI chatbot, here to chat and help!";
+  }
+
+  const byePhrases = ['bye', 'goodbye', 'see you', 'exit'];
+  if (byePhrases.some(b => message.includes(b))) {
+    return "Goodbye! ?? Feel free to chat anytime!";
+  }
+
+  const thanksPhrases = ['thank you', 'thanks'];
+  if (thanksPhrases.some(t => message.includes(t))) {
+    return "You're very welcome! ??";
+  }
+
+  // Commands
+  if (message.startsWith('print ')) {
+    return input.substring(6);
+  } else if (message.startsWith('add ')) {
+    const args = input.substring(4).split(' ').map(Number);
+    if (args.some(isNaN)) {
+      return "Oops! Please provide numbers after 'add'. Example: add 4 5";
+    }
+    return "The sum is: " + args.reduce((a, b) => a + b, 0);
+  } else if (message.startsWith('subtract ')) {
+    const args = input.substring(9).split(' ').map(Number);
+    if (args.some(isNaN) || args.length < 2) {
+      return "Please provide at least two numbers after 'subtract'. Example: subtract 10 3";
+    }
+    let res = args[0];
+    for (let i = 1; i < args.length; i++) res -= args[i];
+    return "Result: " + res;
+  }
+
+  // Text generation
+  const generated = generateText(input);
+  if (generated) return generated;
+
+  // Default fallback
+  return "I can chat, help with math commands, or generate text. Try asking me for a story, poem, or fact!";
+}
+
+function runCommand() {
+  const inputField = document.getElementById('commandInput');
+  const userInput = inputField.value.trim();
+  if (!userInput) return;
+
+  addMessage(userInput, 'user');
+  inputField.value = '';
+
+  const response = getResponse(userInput);
+  addMessage(response, 'bot');
+}
+
+document.getElementById('commandInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    runCommand();
+  }
+});
+</script>
+
+</body>
+</html>
