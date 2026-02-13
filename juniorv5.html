@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Ultimate Friendly Chatbot</title>
+<style>
+  body {
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+    background-color: #e0f7fa;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #00796b;
+  }
+  #chatContainer {
+    width: 100%;
+    max-width: 700px;
+    height: 550px;
+    margin: 0 auto 20px auto;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 2px solid #009688;
+    padding: 15px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+  }
+  .message {
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    max-width: 75%;
+    font-size: 1.1em;
+    white-space: pre-line;
+  }
+  .user {
+    align-self: flex-end;
+    background-color: #b2dfdb;
+    color: #333;
+  }
+  .bot {
+    align-self: flex-start;
+    background-color: #cfd8dc;
+    color: #333;
+  }
+  #inputForm {
+    display: flex;
+    justify-content: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  #commandInput {
+    width: 70%;
+    padding: 12px 15px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    border: 2px solid #009688;
+    outline: none;
+  }
+  #commandInput::placeholder {
+    color: #999;
+  }
+  #sendButton {
+    padding: 12px 20px;
+    margin-left: 10px;
+    font-size: 1.2em;
+    background-color: #009688;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #sendButton:hover {
+    background-color: #00796b;
+  }
+  #tips {
+    max-width: 700px;
+    margin: 10px auto;
+    padding: 10px;
+    background-color: #e0f2f1;
+    border-radius: 8px;
+    border: 1px solid #00695c;
+    font-size: 1em;
+    color: #00695c;
+  }
+</style>
+</head>
+<body>
+
+<h1>?? Ultimate Friendly Chatbot ??</h1>
+
+<div id="tips">
+  Tip: Chat normally or use commands:<br>
+  <b>print</b>, <b>add</b>, <b>subtract</b>, <b>story</b>, <b>poem</b>, <b>fact</b>, <b>joke</b>, <b>riddle</b>, <b>quiz</b>, <b>timer N</b> (seconds)
+</div>
+
+<div id="chatContainer"></div>
+
+<form id="inputForm" onsubmit="event.preventDefault(); runCommand();">
+  <input type="text" id="commandInput" placeholder="Say something or ask me to generate text..." autocomplete="off" />
+  <button type="submit" id="sendButton">Send</button>
+</form>
+
+<script>
+const chatContainer = document.getElementById('chatContainer');
+
+// Welcome message
+function addMessage(text, sender) {
+  const msg = document.createElement('div');
+  msg.className = 'message ' + sender;
+  msg.textContent = text;
+  chatContainer.appendChild(msg);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+addMessage("Hi there! ?? I'm your ultimate chatbot. Chat with me, get stories, poems, facts, jokes, riddles, or even run timers!", 'bot');
+
+// Random data
+const jokes = [
+  "Why did the scarecrow win an award? Because he was outstanding in his field! ??",
+  "I told my computer I needed a break, and it said: 'No problem — I'll go to sleep.' ??",
+  "Why don’t scientists trust atoms? Because they make up everything!"
+];
+const riddles = [
+  {q:"What has keys but can't open locks?", a:"A piano"},
+  {q:"I speak without a mouth and hear without ears. What am I?", a:"An echo"},
+  {q:"What gets wetter as it dries?", a:"A towel"}
+];
+const facts = [
+  "Honey never spoils.",
+  "Octopuses have three hearts.",
+  "Bananas are berries, but strawberries aren't."
+];
+const weatherMock = [
+  "Sunny with a chance of smiles! ??",
+  "Cloudy, but your mood can be bright! ??",
+  "Rainy outside, but cozy inside! ???"
+];
+const quizQuestions = [
+  {q:"What is the capital of France?", options:["A) Paris","B) London","C) Rome"], answer:"A"},
+  {q:"2 + 2 = ?", options:["A) 3","B) 4","C) 5"], answer:"B"},
+  {q:"Which planet is known as the Red Planet?", options:["A) Earth","B) Mars","C) Venus"], answer:"B"}
+];
+
+// Text generators
+function generateText(input){
+  const lower = input.toLowerCase();
+  if(lower.includes("story")){
+    return "?? Story:\nOnce upon a time, a tiny robot dreamed of exploring the stars. It journeyed far and wide, meeting new friends and learning exciting things along the way...";
+  } else if(lower.includes("poem")){
+    return "?? Poem:\nRoses are red,\nViolets are blue,\nChatbots are friendly,\nAnd so are you!";
+  } else if(lower.includes("fact")){
+    return "?? Fact: " + facts[Math.floor(Math.random() * facts.length)];
+  } else if(lower.includes("joke")){
+    return "?? Joke: " + jokes[Math.floor(Math.random() * jokes.length)];
+  } else if(lower.includes("riddle")){
+    const r = riddles[Math.floor(Math.random() * riddles.length)];
+    return "? Riddle: " + r.q + "\n(Answer: " + r.a + ")";
+  } else if(lower.startsWith("quiz")){
+    const q = quizQuestions[Math.floor(Math.random()*quizQuestions.length)];
+    return "?? Quiz: " + q.q + "\n" + q.options.join("\n") + "\n(Type the letter of your answer)";
+  } else if(lower.startsWith("timer")){
+    const parts = lower.split(" ");
+    const seconds = parseInt(parts[1]);
+    if(isNaN(seconds)){
+      return "Please provide a number of seconds. Example: timer 5";
+    }
+    countdown(seconds);
+    return `? Timer started for ${seconds} seconds!`;
+  }
+  return null;
+}
+
+// Countdown timer
+function countdown(sec){
+  let count = sec;
+  const interval = setInterval(()=>{
+    addMessage(`? ${count} seconds remaining...`, 'bot');
+    count--;
+    if(count<0) {
+      clearInterval(interval);
+      addMessage("? Timer finished!", 'bot');
+    }
+  },1000);
+}
+
+// Main chatbot response
+function getResponse(input){
+  const message = input.toLowerCase().trim();
+
+  // Greetings
+  const greetings = ['how are you','how are you today',"what's up",'hi','hello','hey'];
+  if(greetings.some(g=>message.includes(g))) return "I'm doing well! ?? How about you?";
+
+  const nameQuestions = ['what is your name','who are you','your name'];
+  if(nameQuestions.some(n=>message.includes(n))) return "I'm your ultimate friendly AI chatbot! ??";
+
+  const byePhrases = ['bye','goodbye','see you','exit'];
+  if(byePhrases.some(b=>message.includes(b))) return "Goodbye! ?? Chat with me anytime!";
+
+  const thanksPhrases = ['thank you','thanks'];
+  if(thanksPhrases.some(t=>message.includes(t))) return "You're welcome! ??";
+
+  // Math commands
+  if(message.startsWith("print ")) return input.substring(6);
+  if(message.startsWith("add ")){
+    const args = input.substring(4).split(" ").map(Number);
+    if(args.some(isNaN)) return "Please provide numbers after 'add'. Example: add 4 5";
+    return "? Sum: " + args.reduce((a,b)=>a+b,0);
+  }
+  if(message.startsWith("subtract ")){
+    const args = input.substring(9).split(" ").map(Number);
+    if(args.some(isNaN)||args.length<2) return "Please provide at least two numbers after 'subtract'. Example: subtract 10 3";
+    let res = args[0]; for(let i=1;i<args.length;i++) res-=args[i]; return "? Result: " + res;
+  }
+
+  // Text generation / games / timer
+  const gen = generateText(input);
+  if(gen) return gen;
+
+  return "I can chat, do math, generate stories, poems, facts, jokes, riddles, quizzes, or run a timer. Try any of these!";
+}
+
+// Handle user input
+function runCommand(){
+  const inputField = document.getElementById("commandInput");
+  const userInput = inputField.value.trim();
+  if(!userInput) return;
+  addMessage(userInput,'user');
+  inputField.value = '';
+  const response = getResponse(userInput);
+  addMessage(response,'bot');
+}
+
+// Send on Enter
+document.getElementById("commandInput").addEventListener("keydown",function(e){
+  if(e.key==="Enter"){ e.preventDefault(); runCommand(); }
+});
+</script>
+
+</body>
+</html>
